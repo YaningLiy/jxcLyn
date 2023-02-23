@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.PurchaseListGoodsDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.PurchaseListGoods">
+        <result column="purchase_list_goods_id" property="purchaseListGoodsId" jdbcType="INTEGER"/>
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER"/>
+        <result column="goods_code" property="goodsCode" jdbcType="VARCHAR"/>
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+        <result column="goods_model" property="goodsModel" jdbcType="VARCHAR"/>
+        <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR"/>
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="total" property="total" jdbcType="DECIMAL"/>
+        <result column="purchase_list_id" property="purchaseListId" jdbcType="INTEGER"/>
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER"/>
+    </resultMap>
+    <insert id="insert">
+        insert into jxc.t_purchase_list_goods
+        values (0, #{goodsId}, #{goodsCode}, #{goodsName}, #{goodsModel}, #{goodsUnit},
+                #{goodsNum}, #{price}, #{total}, #{purchaseListId}, #{goodsTypeId})
+    </insert>
+    <delete id="deleteBypurchaseListId">
+        delete
+        from jxc.t_purchase_list_goods
+        where jxc.t_purchase_list_goods.purchase_list_id = #{purchaseListId}
+    </delete>
+
+
+    <select id="getPurchaseListGoods" resultMap="BaseResultMap">
+        select jxc.t_purchase_list_goods.purchase_list_goods_id,
+               jxc.t_purchase_list_goods.goods_id,
+               jxc.t_purchase_list_goods.goods_code,
+               jxc.t_purchase_list_goods.goods_name,
+               jxc.t_purchase_list_goods.goods_model,
+               jxc.t_purchase_list_goods.goods_unit,
+               jxc.t_purchase_list_goods.goods_num,
+               jxc.t_purchase_list_goods.price,
+               jxc.t_purchase_list_goods.total,
+               jxc.t_purchase_list_goods.purchase_list_id,
+               jxc.t_purchase_list_goods.goods_type_id,
+               jxc.t_goods_type.goods_type_name
+        from jxc.t_purchase_list_goods
+                 left join jxc.t_goods_type on jxc.t_purchase_list_goods.goods_type_id = jxc.t_goods_type.goods_type_id
+        where jxc.t_purchase_list_goods.purchase_list_id = #{purchaseListId}
+    </select>
+    <select id="getPurchaseListGoodsByGoodsTypeIdAndCodeOrName" resultMap="BaseResultMap">
+        select jxc.t_purchase_list_goods.purchase_list_goods_id,
+        jxc.t_purchase_list_goods.goods_id,
+        jxc.t_purchase_list_goods.goods_code,
+        jxc.t_purchase_list_goods.goods_name,
+        jxc.t_purchase_list_goods.goods_model,
+        jxc.t_purchase_list_goods.goods_unit,
+        jxc.t_purchase_list_goods.goods_num,
+        jxc.t_purchase_list_goods.price,
+        jxc.t_purchase_list_goods.total,
+        jxc.t_purchase_list_goods.purchase_list_id,
+        jxc.t_purchase_list_goods.goods_type_id,
+        jxc.t_goods_type.goods_type_name,
+        t_goods_type.p_id
+        from jxc.t_purchase_list_goods
+        left join jxc.t_goods_type on jxc.t_purchase_list_goods.goods_type_id = jxc.t_goods_type.goods_type_id
+        <where>
+            purchase_list_id = #{purchaseListId}
+            <if test="goodsTypeId != null and goodsTypeId!=''">
+                and (jxc.t_purchase_list_goods.goods_type_id = #{goodsTypeId} or t_goods_type.p_id = #{goodsTypeId})
+
+            </if>
+            <if test="codeOrName !=null and codeOrName!=''">
+                and (jxc.t_purchase_list_goods.goods_code like concat('%',#{codeOrName},'%') or
+                jxc.t_purchase_list_goods.goods_name like concat('%',#{codeOrName},'%'))
+            </if>
+        </where>
+    </select>
+
+</mapper>

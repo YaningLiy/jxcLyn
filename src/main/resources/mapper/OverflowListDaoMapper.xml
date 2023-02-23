@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.OverflowListDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.OverflowList">
+        <result column="overflow_list_id" property="overflowListId" jdbcType="INTEGER" />
+        <result column="overflow_number" property="overflowNumber" jdbcType="VARCHAR" />
+        <result column="overflow_date" property="overflowDate" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="true_name" property="trueName" jdbcType="VARCHAR" />
+    </resultMap>
+    <update id="save" useGeneratedKeys="true" keyProperty="overflowListId">
+        insert into t_overflow_list values (0,#{overflowNumber},#{overflowDate},#{remarks},#{userId})
+    </update>
+
+    <select id="getOverflowList" resultMap="BaseResultMap">
+        SELECT
+            t_overflow_list.overflow_list_id,
+            t_overflow_list.overflow_number,
+            t_overflow_list.overflow_date,
+            t_overflow_list.remarks,
+            t_overflow_list.user_id,
+            t_user.true_name
+        FROM
+            t_overflow_list left join t_user on t_overflow_list.user_id = t_user.user_id
+        <where>
+            <if test="sTime !=null and sTime !=''">
+                and overflow_date >= #{sTime}
+            </if>
+            <if test="eTime !=null and eTime !=''">
+                and overflow_date &lt;= #{eTime}
+            </if>
+        </where>
+    </select>
+</mapper>

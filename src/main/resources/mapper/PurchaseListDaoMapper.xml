@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.PurchaseListDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.PurchaseList">
+        <result column="purchase_list_id" property="purchaseListId" jdbcType="INTEGER"/>
+        <result column="purchase_number" property="purchaseNumber" jdbcType="VARCHAR"/>
+        <result column="amount_paid" property="amountPaid" jdbcType="DECIMAL"/>
+        <result column="amount_payable" property="amountPayable" jdbcType="DECIMAL"/>
+        <result column="purchase_date" property="purchaseDate" jdbcType="VARCHAR"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+        <result column="supplier_id" property="supplierId" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="supplier_name" property="supplierName" jdbcType="VARCHAR"/>
+        <result column="true_name" property="trueName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="purchaseListId">
+        insert into jxc.t_purchase_list
+        values (0, #{purchaseNumber}, #{amountPaid}, #{amountPayable}, #{purchaseDate},
+                #{remarks}, #{state}, #{supplierId}, #{userId})
+    </insert>
+    <update id="updateStateByPurchaseListId">
+        update jxc.t_purchase_list
+        set state = 1
+        where purchase_list_id = #{purchaseListId}
+    </update>
+    <delete id="deleteByPurchaseListId">
+        delete
+        from t_purchase_list
+        where purchase_list_id = #{purchaseListId}
+    </delete>
+    <select id="getpurchaseList" resultMap="BaseResultMap">
+        select
+        t_purchase_list.purchase_list_id,
+        t_purchase_list.purchase_number,
+        t_purchase_list.amount_paid,
+        t_purchase_list.amount_payable,
+        t_purchase_list.purchase_date,
+        t_purchase_list.remarks,
+        t_purchase_list.state,
+        t_purchase_list.supplier_id,
+        t_purchase_list.user_id,
+        t_supplier.supplier_name,
+        t_user.true_name
+        FROM
+        t_purchase_list
+        LEFT JOIN t_supplier ON t_purchase_list.supplier_id = t_supplier.supplier_id
+        LEFT JOIN t_user ON t_purchase_list.user_id = t_user.user_id
+        <where>
+            <if test="purchaseNumber !=null and purchaseNumber!=''">
+                and purchase_number like concat('%',#{purchaseNumber},'%')
+            </if>
+            <if test=" supplierId !=null and supplierId!=''">
+                and t_purchase_list.supplier_id = #{supplierId}
+            </if>
+            <if test=" state !=null and state!=''">
+                and state = #{state}
+            </if>
+            <if test=" sTime !=null and sTime!=''">
+                and purchase_date &gt;= #{sTime}
+            </if>
+            <if test=" state !=null and state!=''">
+                and purchase_date &lt;= #{eTime}
+            </if>
+        </where>
+    </select>
+
+</mapper>

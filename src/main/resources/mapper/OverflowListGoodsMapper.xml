@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.OverflowListGoodsDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.OverflowListGoods">
+        <result column="overflow_list_goods_id" property="overflowListGoodsId" jdbcType="INTEGER" />
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+        <result column="goods_model" property="goodsModel" jdbcType="VARCHAR" />
+        <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR" />
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="total" property="total" jdbcType="DECIMAL" />
+        <result column="overflow_list_id" property="overflowListId" jdbcType="INTEGER" />
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER" />
+    </resultMap>
+    <insert id="save">
+        insert into t_overflow_list_goods
+        values (0, #{goodsId}, #{goodsCode}, #{goodsName}, #{goodsModel}, #{goodsUnit}, #{goodsNum}, #{price}, #{total},
+                #{overflowListId}, #{goodsTypeId})
+    </insert>
+    <select id="getOverflowListGoods" resultMap="BaseResultMap">
+        SELECT
+            t_overflow_list_goods.overflow_list_goods_id,
+            t_overflow_list_goods.goods_id,
+            t_overflow_list_goods.goods_code,
+            t_overflow_list_goods.goods_name,
+            t_overflow_list_goods.goods_model,
+            t_overflow_list_goods.goods_unit,
+            t_overflow_list_goods.goods_num,
+            t_overflow_list_goods.price,
+            t_overflow_list_goods.total,
+            t_overflow_list_goods.overflow_list_id,
+            t_overflow_list_goods.goods_type_id
+        FROM
+            t_overflow_list_goods
+        WHERE
+            overflow_list_id = #{overflowListId}
+    </select>
+</mapper>

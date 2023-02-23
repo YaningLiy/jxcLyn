@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.SupplierDao">
+
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.Supplier">
+        <result column="supplier_id" property="supplierId" jdbcType="INTEGER"/>
+        <result column="supplier_name" property="supplierName" jdbcType="VARCHAR"/>
+        <result column="contacts" property="contacts" jdbcType="VARCHAR"/>
+        <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="insertSupplier">
+        insert into jxc.t_supplier
+        values (null, #{supplier.supplierName}, #{supplier.contacts}, #{supplier.contacts}, #{supplier.address},
+                #{supplier.remarks})
+    </insert>
+    <update id="updateSupplier">
+        update jxc.t_supplier
+        <set>
+            <if test="supplier.supplierName!=null and supplier.supplierName!=''">
+                supplier_name= #{supplier.supplierName},
+            </if>
+            <if test="supplier.contacts !=null and supplier.contacts!='' ">
+                contacts = #{supplier.contacts},
+            </if>
+            <if test="supplier.supplierName!=null and supplier.supplierName !=''">
+                phone_number = #{supplier.phoneNumber},
+            </if>
+            <if test="supplier.address !=null and supplier.address !=''">
+                address= #{supplier.address},
+            </if>
+            <if test="supplier.remarks !=null and supplier.remarks !=''">
+                remarks = #{supplier.remarks},
+            </if>
+        </set>
+        where supplier_id = #{supplierId}
+    </update>
+    <delete id="deleteSupplier">
+        delete from jxc.t_supplier where supplier_id in
+        <foreach collection="idss" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="list" resultMap="BaseResultMap">
+        select t_supplier.supplier_id,
+        t_supplier.supplier_name,
+        t_supplier.contacts,
+        t_supplier.phone_number,
+        t_supplier.address,
+        t_supplier.remarks
+        from jxc.t_supplier
+        <where>
+            <if test="supplierName != null and supplierName != ''">
+                supplier_name like concat('%',#{supplierName},'%')
+            </if>
+        </where>
+        limit #{offset}
+        , #{rows}
+    </select>
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(1) from jxc.t_supplier
+        <where>
+            <if test="supplierName != null and supplierName !=''">
+                supplier_name like concat('%',#{supplierName},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getComboboxList" resultMap="BaseResultMap">
+        select t_supplier.supplier_id,
+        t_supplier.supplier_name,
+        t_supplier.contacts,
+        t_supplier.phone_number,
+        t_supplier.address,
+        t_supplier.remarks
+        from jxc.t_supplier
+        <where>
+            <if test="supplierName != null and supplierName != ''">
+                supplier_name like concat('%',#{supplierName},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

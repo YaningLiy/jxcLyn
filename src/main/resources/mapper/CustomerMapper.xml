@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.CustomerDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.Customer">
+        <result column="customer_id" property="customerId" jdbcType="INTEGER"/>
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
+        <result column="contacts" property="contacts" jdbcType="VARCHAR"/>
+        <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="insertCustomer">
+        insert into jxc.t_customer
+        values (null, #{customer.customerName}, #{customer.contacts}, #{customer.phoneNumber}, #{customer.address},
+                #{customer.remarks})
+    </insert>
+    <update id="updateCustomer">
+        update jxc.t_customer
+        <set>
+            <if test="customerName !=null and customerName!=''">
+                customer_name = #{customerName},
+            </if>
+            <if test="contacts !=null and contacts!='' ">
+                contacts = #{contacts},
+            </if>
+            <if test="phoneNumber!=null and phoneNumber !=''">
+                phone_number = #{phoneNumber},
+            </if>
+            <if test="address !=null and address !=''">
+                address= #{address},
+            </if>
+            <if test="remarks !=null and remarks !=''">
+                remarks = #{remarks},
+            </if>
+        </set>
+        where customer_id = #{customerId}
+    </update>
+    <delete id="delete">
+        delete
+        from jxc.t_customer
+        where customer_id = #{idss}
+    </delete>
+
+    <select id="list" resultMap="BaseResultMap">
+        select *
+        from jxc.t_customer
+        <where>
+            <if test="customerName!=null and customerName!=''">
+                where customer_name like concat('%', #{customerName}, '%')
+            </if>
+        </where>
+        limit #{offset}
+        , #{rows}
+    </select>
+    <select id="getCustomerCount" resultType="java.lang.Integer">
+        select count(1)
+        from jxc.t_customer
+        <where>
+            <if test="customerName!=null and customerName!=''">
+                where customer_name like concat('%', #{customerName}, '%')
+            </if>
+        </where>
+    </select>
+    <select id="getComboboxList" resultMap="BaseResultMap">
+        select
+        customer_id,
+        customer_name,
+        contacts,
+        phone_number,
+        address,
+        remarks
+        from jxc.t_customer
+        <where>
+            <if test="q != null and q != ''">
+                customer_name like concat('%',#{q},'%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

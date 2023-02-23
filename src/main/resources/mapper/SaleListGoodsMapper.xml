@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.SaleListGoodsDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.SaleListGoods">
+        <result column="sale_list_goods_id" property="saleListGoodsId" jdbcType="INTEGER"/>
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER"/>
+        <result column="goods_code" property="goodsCode" jdbcType="VARCHAR"/>
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+        <result column="goods_model" property="goodsModel" jdbcType="VARCHAR"/>
+        <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR"/>
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="total" property="total" jdbcType="DECIMAL"/>
+        <result column="sale_list_id" property="saleListId" jdbcType="INTEGER"/>
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="BaseResultMap2" type="com.lyn.jxc.entity.SaleData">
+        <result column="date" property="date" jdbcType="VARCHAR" />
+        <result column="saleTotal" property="saleTotal" jdbcType="DECIMAL" />
+        <result column="purchasingTotal" property="purchasingTotal" jdbcType="DECIMAL" />
+    </resultMap>
+    <insert id="insert">
+        insert into t_sale_list_goods
+        values (0, #{goodsId}, #{goodsCode}, #{goodsName}, #{goodsModel},
+                #{goodsNum}, #{goodsUnit}, #{price}, #{total}, #{saleListId}, #{goodsTypeId})
+    </insert>
+    <delete id="deleteBySaleListId">
+        delete
+        from t_sale_list_goods
+        where t_sale_list_goods.sale_list_id = #{saleListId}
+    </delete>
+
+    <select id="getSaleTotalByGoodsId" resultType="java.lang.Integer">
+        select sum(goods_num)
+        from jxc.t_sale_list_goods
+        where goods_id = #{goodsId}
+    </select>
+    <select id="getSaleListGoodsList" resultMap="BaseResultMap">
+        SELECT t_sale_list_goods.sale_list_goods_id,
+               t_sale_list_goods.goods_id,
+               t_sale_list_goods.goods_code,
+               t_sale_list_goods.goods_name,
+               t_sale_list_goods.goods_model,
+               t_sale_list_goods.goods_num,
+               t_sale_list_goods.goods_unit,
+               t_sale_list_goods.price,
+               t_sale_list_goods.total,
+               t_sale_list_goods.sale_list_id,
+               t_sale_list_goods.goods_type_id
+        FROM t_sale_list_goods
+        WHERE sale_list_id = #{saleListId}
+    </select>
+    <select id="getSaleListGoodsListByGoodsTypeIdAndCodeOrName" resultMap="BaseResultMap">
+        SELECT
+        t_sale_list_goods.sale_list_goods_id,
+        t_sale_list_goods.goods_id,
+        t_sale_list_goods.goods_code,
+        t_sale_list_goods.goods_name,
+        t_sale_list_goods.goods_model,
+        t_sale_list_goods.goods_num,
+        t_sale_list_goods.goods_unit,
+        t_sale_list_goods.price,
+        t_sale_list_goods.total,
+        t_sale_list_goods.sale_list_id,
+        t_sale_list_goods.goods_type_id,
+        t_goods_type.p_id
+        FROM
+        t_sale_list_goods
+        LEFT JOIN t_goods_type ON t_sale_list_goods.goods_type_id = t_goods_type.goods_type_id
+        <where>
+            t_sale_list_goods.sale_list_id = #{saleListId}
+            <if test="goodsTypeId != null and goodsTypeId != 1">
+                AND
+                (
+                t_sale_list_goods.goods_type_id = #{goodsTypeId} OR
+                t_goods_type.p_id = #{goodsTypeId}
+                )
+            </if>
+            <if test="codeOrName != null and codeOrName != ''">
+                AND
+                (
+                t_sale_list_goods.goods_name LIKE CONCAT('%', #{codeOrName} ,'%') OR
+                t_sale_list_goods.goods_code LIKE CONCAT('%', #{codeOrName} ,'%')
+                )
+            </if>
+        </where>
+    </select>
+    <select id="getSaleDataByDay" resultMap="BaseResultMap2">
+        select sale_date date, sum(tslg.goods_num * tslg.price) saleTotal, sum(tslg.goods_num * tg.purchasing_price ) purchasingTotal
+        from t_sale_list_goods tslg
+                 left join t_sale_list tsl on tsl.sale_list_id = tslg.sale_list_id
+                 left join t_goods tg on tg.goods_id = tslg.goods_id
+        where sale_date between #{sTime} and  #{eTime}
+        group by sale_date
+        order by sale_date
+    </select>
+    <select id="getSaleDataByMonth" resultMap="BaseResultMap2">
+        SELECT
+            DATE_FORMAT( t2.sale_date, '%Y-%m' ) AS DATE,
+            SUM( t1.goods_num * t1.price ) AS saleTotal,
+            SUM( t1.goods_num * t3.purchasing_price ) AS purchasingTotal
+        FROM
+            t_sale_list_goods t1
+            LEFT JOIN t_sale_list t2 ON t1.sale_list_id = t2.sale_list_id
+            LEFT JOIN t_goods t3 ON t1.goods_id = t3.goods_id
+        WHERE
+            DATE_FORMAT( t2.sale_date, '%Y-%m' ) BETWEEN #{sTime} AND #{eTime}
+        GROUP BY
+            DATE_FORMAT( t2.sale_date, '%Y-%m' )
+    </select>
+</mapper>

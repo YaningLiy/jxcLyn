@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyn.jxc.dao.GoodsTypeDao">
+
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.GoodsType">
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER"/>
+        <result column="goods_type_name" property="goodsTypeName" jdbcType="VARCHAR"/>
+        <result column="p_id" property="pId" jdbcType="INTEGER"/>
+        <result column="goods_type_state" property="goodsTypeState" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="save">
+        insert into jxc.t_goods_type (goods_type_name, p_id,goods_type_state)
+        values (#{goodsTypeName}, #{pId},#{goodsTypeState})
+    </insert>
+    <delete id="delete">
+        delete from jxc.t_goods_type where goods_type_id = #{goodsTypeId}
+    </delete>
+
+    <select id="loadGoodsType" resultType="com.lyn.jxc.entity.GoodsType">
+        select *
+        from t_goods_type
+    </select>
+
+    <select id="getAllGoodsTypeByParentId" resultMap="BaseResultMap">
+        select t_goods_type.goods_type_id,
+               t_goods_type.goods_type_name,
+               t_goods_type.p_id,
+               t_goods_type.goods_type_state
+        from t_goods_type
+        where p_id = #{parentId}
+    </select>
+    <select id="getGoodsTypeById" resultMap="BaseResultMap">
+        select t_goods_type.goods_type_id,
+               t_goods_type.goods_type_name,
+               t_goods_type.p_id,
+               t_goods_type.goods_type_state
+        from t_goods_type
+        where goods_type_id = #{goodsTypeId}
+    </select>
+</mapper>

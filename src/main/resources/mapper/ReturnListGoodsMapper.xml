@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.ReturnListGoodsDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.ReturnListGoods">
+        <result column="return_list_goods_id" property="returnListGoodsId" jdbcType="INTEGER"/>
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER"/>
+        <result column="goods_code" property="goodsCode" jdbcType="VARCHAR"/>
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+        <result column="goods_model" property="goodsModel" jdbcType="VARCHAR"/>
+        <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR"/>
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="total" property="total" jdbcType="DECIMAL"/>
+        <result column="return_list_id" property="returnListId" jdbcType="INTEGER"/>
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER"/>
+    </resultMap>
+    <insert id="insert">
+        insert into jxc.t_return_list_goods
+        values (0, #{goodsId}, #{goodsCode}, #{goodsName}, #{goodsModel}, #{goodsUnit}, #{goodsNum}, #{price}, #{total},
+                #{returnListId}, #{goodsTypeId})
+    </insert>
+    <delete id="deleteByReturnListId">
+        delete
+        from t_return_list_goods
+        where t_return_list_goods.return_list_id = #{returnListId}
+    </delete>
+    <select id="getReturnListGoods" resultMap="BaseResultMap">
+        SELECT t_return_list_goods.return_list_goods_id,
+               t_return_list_goods.goods_id,
+               t_return_list_goods.goods_code,
+               t_return_list_goods.goods_name,
+               t_return_list_goods.goods_model,
+               t_return_list_goods.goods_unit,
+               t_return_list_goods.goods_num,
+               t_return_list_goods.price,
+               t_return_list_goods.total,
+               t_return_list_goods.return_list_id,
+               t_return_list_goods.goods_type_id
+        FROM t_return_list_goods
+        WHERE t_return_list_goods.return_list_id = #{returnListId}
+
+    </select>
+    <select id="getReturnListGoodsListByGoodsTypeIdAndCodeOrName" resultMap="BaseResultMap">
+        SELECT
+        t_return_list_goods.return_list_goods_id,
+        t_return_list_goods.goods_id,
+        t_return_list_goods.goods_code,
+        t_return_list_goods.goods_name,
+        t_return_list_goods.goods_model,
+        t_return_list_goods.goods_unit,
+        t_return_list_goods.goods_num,
+        t_return_list_goods.price,
+        t_return_list_goods.total,
+        t_return_list_goods.return_list_id,
+        t_return_list_goods.goods_type_id,
+        t_goods_type.p_id
+        FROM
+        t_return_list_goods
+        LEFT JOIN t_goods_type ON t_return_list_goods.goods_type_id = t_goods_type.goods_type_id
+        <where>
+            t_return_list_goods.return_list_id = #{returnListId}
+            <if test="goodsTypeId != null and goodsTypeId != 1">
+                AND
+                (
+                t_return_list_goods.goods_type_id = #{goodsTypeId} OR
+                t_goods_type.p_id = #{goodsTypeId}
+                )
+            </if>
+            <if test="codeOrName != null and codeOrName != ''">
+                AND
+                (
+                t_return_list_goods.goods_name LIKE CONCAT('%', #{codeOrName} ,'%') OR
+                t_return_list_goods.goods_code LIKE CONCAT('%', #{codeOrName} ,'%')
+                )
+            </if>
+        </where>
+    </select>
+</mapper>

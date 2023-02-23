@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.DamageListDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.DamageList">
+        <result column="damage_list_id" property="damageListId" jdbcType="INTEGER"/>
+        <result column="damage_number" property="damageNumber" jdbcType="VARCHAR"/>
+        <result column="damage_date" property="damageDate" jdbcType="VARCHAR"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="true_name" property="trueName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="save" useGeneratedKeys="true" keyProperty="damageListId">
+        insert into t_damage_list
+        values (0, #{damageNumber}, #{damageDate}, #{remarks}, #{userId})
+    </insert>
+    <select id="getDamagelist" resultMap="BaseResultMap">
+        select t_damage_list.damage_list_id,
+        t_damage_list.damage_number,
+        t_damage_list.damage_date,
+        t_damage_list.remarks,
+        t_damage_list.user_id,
+        t_user.true_name
+        from t_damage_list
+        LEFT JOIN t_user ON t_damage_list.user_id = t_user.user_id
+        <where>
+            <if test="sTime != null and sTime != ''">
+                AND t_damage_list.damage_date &gt;= #{sTime}
+            </if>
+            <if test="eTime != null and eTime != ''">
+                AND t_damage_list.damage_date &lt;= #{eTime}
+            </if>
+        </where>
+    </select>
+</mapper>

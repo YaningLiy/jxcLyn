@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vue.js Example</title>
+    <script language="JavaScript" src="vue.js"></script>
+</head>
+<body>
+<div id="app">
+    <h1>{{ message }}</h1>
+    <p v-if="showText">This is some text.</p>
+    <button v-on:click="toggleText">Toggle Text</button>
+    <a type="text" :value = "showText"></a>
+   <input type="text" v-model="message">
+    <h2 v-if="showText">111</h2>
+    <h2 v-else="showText">222</h2>
+    <h2 v-show="showText">3333</h2>
+    <table>
+        <tr v-for="fru in fruitList">
+            <td>{{fru.fname}}</td>
+        </tr>
+    </table>
+
+</div>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            showText: false,
+            fruitList: [{fid: 1, fname: "苹果", price: 5, remark: "苹果很好吃"},
+                {fid: 2, fname: "香蕉", price: 4, remark: "香蕉很好吃"},
+                {fid: 3, fname: "菠萝", price: 9, remark: "菠萝很好吃"},
+                {fid: 4, fname: "哈密瓜", price: 1, remark: "哈密瓜很好吃"}]
+        },
+        methods: {
+            toggleText: function () {
+                this.showText = !this.showText
+            }
+        },
+        watch:{
+            showText:function () {
+                console.log("111111111111111111111111")
+            }
+        }
+    })
+</script>
+</body>
+</html>

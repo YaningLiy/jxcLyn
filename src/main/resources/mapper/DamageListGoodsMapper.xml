@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.DamageListGoodsDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.DamageListGoods">
+        <result column="damage_list_goods_id" property="damageListGoodsId" jdbcType="INTEGER" />
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+        <result column="goods_model" property="goodsModel" jdbcType="VARCHAR" />
+        <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR" />
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="total" property="total" jdbcType="DECIMAL" />
+        <result column="damage_list_id" property="damageListId" jdbcType="INTEGER" />
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER" />
+    </resultMap>
+    <insert id="save">
+        insert into t_damage_list_goods values (0,#{goodsId},#{goodsCode},#{goodsName},#{goodsModel},#{goodsUnit},#{goodsNum},#{price},#{total},#{damageListId},#{goodsTypeId})
+    </insert>
+
+    <select id="getDamageListByDamageListId" resultMap="BaseResultMap">
+        select
+            t_damage_list_goods.damage_list_goods_id,
+            t_damage_list_goods.goods_id,
+            t_damage_list_goods.goods_code,
+            t_damage_list_goods.goods_name,
+            t_damage_list_goods.goods_model,
+            t_damage_list_goods.goods_unit,
+            t_damage_list_goods.goods_num,
+            t_damage_list_goods.price,
+            t_damage_list_goods.total,
+            t_damage_list_goods.damage_list_id,
+            t_damage_list_goods.goods_type_id
+        from
+            t_damage_list_goods
+        where
+            damage_list_id = #{damageListId}
+    </select>
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.jxc.dao.SaleListDao">
+    <resultMap id="BaseResultMap" type="com.lyn.jxc.entity.SaleList">
+        <result column="sale_list_id" property="saleListId" jdbcType="INTEGER" />
+        <result column="sale_number" property="saleNumber" jdbcType="VARCHAR" />
+        <result column="amount_paid" property="amountPaid" jdbcType="DECIMAL" />
+        <result column="amount_payable" property="amountPayable" jdbcType="DECIMAL" />
+        <result column="sale_date" property="saleDate" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="customer_id" property="customerId" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+        <result column="true_name" property="trueName" jdbcType="VARCHAR" />
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="saleListId">
+        insert into jxc.t_sale_list
+        values (0, #{saleNumber}, #{amountPaid}, #{amountPayable}, #{saleDate}, #{state}, #{remarks}, #{customerId},
+                #{userId})
+    </insert>
+    <update id="updateStateBySaleListId">
+        update jxc.t_sale_list
+        set state = 1
+        where sale_list_id = #{saleListId}
+    </update>
+    <delete id="deleteBySaleListId">
+        delete from t_sale_list where  t_sale_list.sale_list_id = #{saleListId}
+    </delete>
+    <select id="getSaleList" resultMap="BaseResultMap">
+        SELECT
+        t_sale_list.sale_list_id,
+        t_sale_list.sale_number,
+        t_sale_list.amount_paid,
+        t_sale_list.amount_payable,
+        t_sale_list.sale_date,
+        t_sale_list.state,
+        t_sale_list.remarks,
+        t_sale_list.customer_id,
+        t_sale_list.user_id,
+        t_user.true_name,
+        t_customer.customer_name
+        FROM
+        t_sale_list
+        LEFT JOIN t_user ON t_sale_list.user_id = t_user.user_id
+        LEFT JOIN t_customer ON t_sale_list.customer_id = t_customer.customer_id
+        <where>
+            <if test="saleNumber != null and saleNumber != ''">
+                AND t_sale_list.sale_number LIKE CONCAT('%', #{saleNumber} ,'%')
+            </if>
+            <if test="customerId != null">
+                AND t_sale_list.customer_id = #{customerId}
+            </if>
+            <if test="state != null">
+                AND t_sale_list.state = #{state}
+            </if>
+            <if test="sTime != null and sTime != ''">
+                AND t_sale_list.sale_date &gt;= #{sTime}
+            </if>
+            <if test="eTime != null and eTime != ''">
+                AND t_sale_list.sale_date &lt;= #{eTime}
+            </if>
+        </where>
+    </select>
+</mapper>
